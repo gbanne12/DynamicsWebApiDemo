@@ -1,0 +1,1 @@
+Example of how to authenticate and then make a request to query / update dataverse 
