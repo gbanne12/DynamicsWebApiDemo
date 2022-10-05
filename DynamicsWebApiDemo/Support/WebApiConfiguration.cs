@@ -16,16 +16,6 @@ namespace DynamicsWebApiDemo.Support
             var builder = new ConfigurationBuilder();
             var config = JsonConfigurationExtensions.AddJsonFile(builder, "appsettings.json").Build();
 
-
-            Console.WriteLine($"clientID = {config.GetConnectionString("Client-ID")}");
-
-            // var appSettings = ConfigurationManager.AppSettings;
-            /*ClientId = appSettings["Client-ID"];
-            Secret = appSettings["Client-Secret"];
-            TenantId = appSettings["Tenant-ID"];
-            ResourceUri = appSettings["Resource-URL"];
-            ServiceRoot = appSettings["Service-Root"];*/
-
             ClientId = config.GetConnectionString("Client-ID");
             Secret = config.GetConnectionString("Client-Secret");
             TenantId = config.GetConnectionString("Tenant-ID");
