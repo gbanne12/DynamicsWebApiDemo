@@ -1,11 +1,8 @@
-using System;
-using System.IO;
-using System.Net.Http;
 using System.Reflection;
 using DynamicsWebApiDemo.Support;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using TechTalk.SpecFlow;
+
 
 namespace DynamicsWebApiDemo.StepDefinitions
 {
@@ -16,42 +13,26 @@ namespace DynamicsWebApiDemo.StepDefinitions
         private static readonly string RootDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         [Given("I have created (.*)")]
-        public async void GivenTheFirstNumberIs(string fileName)
+        public void GivenTheFirstNumberIs(string fileName)
         {
-
-            /*  string path = RootDirectory +  FileDirectory + fileName + ".json";
-              JObject json = JObject.Parse(File.ReadAllText(path));
-
-              string entityName = "";
-              JToken value;
-              if (json.TryGetValue("@logicalName", out value))
-              {
-                  entityName = (string)value;
-              }
-
-              string messageBody = JsonConvert.SerializeObject(json);
-              await WebApiRequest.SendMessageAsync(HttpMethod.Post, entityName, messageBody);*/
-
             string path = RootDirectory + FileDirectory + fileName + ".json";
             JObject json = JObject.Parse(File.ReadAllText(path));
-            // JObject json = JObject.Parse(File.ReadAllText("./Data/John Doe.json"));
 
+            // Get the entity to update from the json data file
             string entityName = "";
             JToken value;
             if (json.TryGetValue("@logicalName", out value))
             {
                 entityName = (string)value;
             }
-            //var entityName = "accounts";
-
-      
-            
+               
             string messageBody = JsonConvert.SerializeObject(json);
-
-            var response = WebApiRequest.SendMessageAsync(HttpMethod.Post, entityName, messageBody).Result;
+            var webConfig = new WebApiConfiguration();
+            string messageUri = webConfig.ServiceRoot + entityName;
+            var response = WebApiRequest.SendMessageAsync(webConfig, HttpMethod.Post, messageUri, messageBody).Result;
 
             // Format and then output the JSON response to the console.
-            if (response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode  && !response.StatusCode.ToString().Equals("204"))
             {
                 JObject body = JObject.Parse(response.Content.ReadAsStringAsync().Result);
                 Console.WriteLine(body.ToString());
@@ -62,5 +43,4 @@ namespace DynamicsWebApiDemo.StepDefinitions
             }
         }
     }
-
 }

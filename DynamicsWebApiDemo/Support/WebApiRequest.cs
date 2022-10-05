@@ -9,15 +9,18 @@ namespace DynamicsWebApiDemo.Support
 {
     internal class WebApiRequest
     {
-
-        public static async Task<HttpResponseMessage> SendMessageAsync(HttpMethod httpMethod, string entityName, string messageBody = null)
+        /// <summary>
+        /// Make a http request to Dataverse defined in the appsettings.json
+        /// </summary>
+        /// <param name="webConfig">values from appsettings.json</param>
+        /// <param name="httpMethod">the request type</param>
+        /// <param name="messageUri">the url or the request including filter and select info</param>
+        /// <param name="messageBody">the body required for a POST request</param>
+        /// <returns></returns>
+        public static async Task<HttpResponseMessage> SendMessageAsync(
+            WebApiConfiguration webConfig, HttpMethod httpMethod, string messageUri, string messageBody = null)
         {
-                    // Obtain the app registration and service configuration values from the App.config file.
-            var webConfig = new WebApiConfiguration();
-            //var accessToken = await GetAccessToken(webConfig);
-            var accessToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjJaUXBKM1VwYmpBWVhZR2FYRUpsOGxWMFRPSSIsImtpZCI6IjJaUXBKM1VwYmpBWVhZR2FYRUpsOGxWMFRPSSJ9.eyJhdWQiOiJodHRwczovL29yZ2MwYzJhODUxLmFwaS5jcm00LmR5bmFtaWNzLmNvbSIsImlzcyI6Imh0dHBzOi8vc3RzLndpbmRvd3MubmV0LzUwOGIzYjZhLTc1NDEtNDJhNy1hMTUzLTljMjQ1NDk3NjBiZC8iLCJpYXQiOjE2NjQ4OTM5MTksIm5iZiI6MTY2NDg5MzkxOSwiZXhwIjoxNjY0ODk4NzkzLCJhY3IiOiIxIiwiYWlvIjoiQVRRQXkvOFRBQUFBZklYQWxpMXcvUEh2V2VjTm1ZTVRJUWdLeTMvU3YzZ2hpcXB6VnNKVVQ1Q01SSm9IMXRNbkx5QTF0TkYxMkUvVSIsImFtciI6WyJwd2QiXSwiYXBwaWQiOiI1MWY4MTQ4OS0xMmVlLTRhOWUtYWFhZS1hMjU5MWY0NTk4N2QiLCJhcHBpZGFjciI6IjAiLCJmYW1pbHlfbmFtZSI6IkJhbm5lcm1hbiIsImdpdmVuX25hbWUiOiJHYXJ5IiwiaXBhZGRyIjoiODYuMTY1LjQxLjE4OCIsIm5hbWUiOiJHYXJ5IEJhbm5lcm1hbiIsIm9pZCI6IjM1MjQ1NzY0LTE3OWItNGYzYS05Njk4LWNiZTY4OWFiM2RmNSIsInB1aWQiOiIxMDAzMjAwMjI4NThBRjc2IiwicmgiOiIwLkFZSUFhanVMVUVGMXAwS2hVNXdrVkpkZ3ZRY0FBQUFBQUFBQXdBQUFBQUFBQUFDVkFKSS4iLCJzY3AiOiJ1c2VyX2ltcGVyc29uYXRpb24iLCJzdWIiOiJNeUU3ZGczSWtYbjdmOW13UWdXMFpCMTlBYkNqcDZRZHY1LTVkclQ4Y2w4IiwidGlkIjoiNTA4YjNiNmEtNzU0MS00MmE3LWExNTMtOWMyNDU0OTc2MGJkIiwidW5pcXVlX25hbWUiOiJiYW5uZXJnYUB3bjd5ci5vbm1pY3Jvc29mdC5jb20iLCJ1cG4iOiJiYW5uZXJnYUB3bjd5ci5vbm1pY3Jvc29mdC5jb20iLCJ1dGkiOiJBeWdaZEFNVUNrT21fMkhnc2ZXb0FBIiwidmVyIjoiMS4wIn0.LJSO7tBLFtx-L1lrvk2MB05dFMLZCy8LJNmWYVdlUNrTmXPGUN0lVWdtWQXxp1GRnGdPZEbiW7fT6silcdh5fvG4osoiganHZefHJh2kQ4Phokcb_AJr3y2pOzWotKd93hQkzFZERGrWcR8n8RDpz6AwkJ7W8A2dlVlMN8m_vwBqJTumfZnwjcaBRo6R_tfCFh4EzzC5yT9xUW4WA4S6d8lIQyyVZXM27ERlLvVEv8nPKL56a26Sm2DFcvbpKz5bJ2NuA0EVKtNKuiB9Yv1swgyCB75MNO1pqaOPyP8bJkMTZOPmk5cV969_LSLfE_cJh8DWBT0AVA_sqV-9vorskw";
-
-            var messageUri = webConfig.ServiceRoot + entityName;
+            var accessToken = await GetAccessToken(webConfig);
 
             // Create an HTTP message with the required WebAPI headers populated.
             var client = new HttpClient();
@@ -25,6 +28,7 @@ namespace DynamicsWebApiDemo.Support
             message.Headers.Add("OData-MaxVersion", "4.0");
             message.Headers.Add("OData-Version", "4.0");
             message.Headers.Add("Prefer", "odata.include-annotations=*");
+            message.Headers.Add("Accept", "application/json");
             message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             if (messageBody != null)
