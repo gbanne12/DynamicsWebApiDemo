@@ -56,17 +56,6 @@ namespace DynamicsWebApiDemo.Support
         {
             var credentials = new ClientCredential(webConfig.ClientId, webConfig.Secret);
             var authContext = new AuthenticationContext("https://login.microsoftonline.com/" + webConfig.TenantId);
-
-            try
-            {
-                var result0 = await authContext.AcquireTokenAsync(webConfig.ResourceUri, credentials);
-                var result2 = await authContext.AcquireTokenAsync(webConfig.ResourceUri, credentials);
-            } 
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine(ex.Message); 
-            }
-
             var result = await authContext.AcquireTokenAsync(webConfig.ResourceUri, credentials);
             return result.AccessToken;
         }
