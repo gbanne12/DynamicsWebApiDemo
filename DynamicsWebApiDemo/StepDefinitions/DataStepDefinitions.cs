@@ -13,33 +13,35 @@ namespace DynamicsWebApiDemo.StepDefinitions
         private static readonly string RootDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         [Given("I have created (.*)")]
-        public void GivenTheFirstNumberIs(string fileName)
+        public static void GivenIHaveCreated(string fileName)
         {
-            string path = RootDirectory + FileDirectory + fileName + ".json";
-            JObject json = JObject.Parse(File.ReadAllText(path));
+            var filePath = RootDirectory + FileDirectory + fileName + ".json";
+            var json = JObject.Parse(File.ReadAllText(filePath));
 
             // Get the entity to update from the json data file
-            string entityName = "";
-            JToken value;
-            if (json.TryGetValue("@logicalName", out value))
+            var entityName = "";
+            if (json.TryGetValue("@logicalName", out JToken value))
             {
                 entityName = (string)value;
             }
-               
-            string messageBody = JsonConvert.SerializeObject(json);
-            var webConfig = new WebApiConfiguration();
-            string messageUri = webConfig.ServiceRoot + entityName;
-            var response = WebApiRequest.SendMessageAsync(webConfig, HttpMethod.Post, messageUri, messageBody).Result;
 
+            var requestBody = JsonConvert.SerializeObject(json);
+            var config = new WebApiConfiguration();
+            var messageUri = config.ServiceRoot + entityName;
+            var response = WebApiRequest.SendMessageAsync(config, HttpMethod.Post, messageUri, requestBody).Result;
+            
             // Format and then output the JSON response to the console.
-            if (response.IsSuccessStatusCode  && !response.StatusCode.ToString().Equals("204"))
+            bool hasResponseBody = response.IsSuccessStatusCode && 
+                                      !response.StatusCode.ToString().Equals("NoContent");
+            if (hasResponseBody)
             {
-                JObject body = JObject.Parse(response.Content.ReadAsStringAsync().Result);
-                Console.WriteLine(body.ToString());
+                var responseBody = JObject.Parse(response.Content.ReadAsStringAsync().Result);
+                System.Diagnostics.Debug.WriteLine(responseBody.ToString());
             }
-            else
+
+            if (response.Headers.Contains("OData-EntityId"))
             {
-                Console.WriteLine("The request failed with a status of '{0}'", response.ReasonPhrase);
+                System.Diagnostics.Debug.WriteLine(response.ToString());
             }
         }
     }
